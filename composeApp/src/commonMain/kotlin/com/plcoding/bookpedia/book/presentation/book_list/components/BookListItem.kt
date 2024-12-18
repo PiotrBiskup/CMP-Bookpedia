@@ -44,9 +44,7 @@ import kotlin.math.round
 
 @Composable
 fun BookListItem(
-    book: Book,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    book: Book, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     Surface(
         shape = RoundedCornerShape(32.dp),
@@ -54,17 +52,13 @@ fun BookListItem(
         color = LightBlue.copy(alpha = 0.2f)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
+            modifier = Modifier.padding(16.dp).fillMaxWidth().height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
             Box(
-                modifier = Modifier.height(100.dp),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.height(100.dp), contentAlignment = Alignment.Center
             ) {
                 var imagerLoadResult by remember {
                     mutableStateOf<Result<Painter>?>(null)
@@ -73,17 +67,16 @@ fun BookListItem(
                 val painter = rememberAsyncImagePainter(
                     model = book.imageUrl,
                     onSuccess = {
-                        if (it.painter.intrinsicSize.height > 1 && it.painter.intrinsicSize.width > 1) {
-                            Result.success(it.painter)
-                        } else {
-                            Result.failure(Exception("Invalid image size"))
-                        }
-                    },
-                    onError = {
+                        imagerLoadResult =
+                            if (it.painter.intrinsicSize.height > 1 && it.painter.intrinsicSize.width > 1) {
+                                Result.success(it.painter)
+                            } else {
+                                Result.failure(Exception("Invalid image size"))
+                            }
+                    }, onError = {
                         it.result.throwable.printStackTrace()
                         imagerLoadResult = Result.failure(it.result.throwable)
-                    }
-                )
+                    })
 
                 when (val result = imagerLoadResult) {
                     null -> CircularProgressIndicator()
@@ -93,8 +86,7 @@ fun BookListItem(
                             contentDescription = book.title,
                             contentScale = if (result.isSuccess) ContentScale.Crop else ContentScale.Fit,
                             modifier = Modifier.aspectRatio(
-                                ratio = 0.65f,
-                                matchHeightConstraintsFirst = true
+                                ratio = 0.65f, matchHeightConstraintsFirst = true
                             )
                         )
                     }
@@ -102,9 +94,7 @@ fun BookListItem(
             }
 
             Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
+                modifier = Modifier.fillMaxHeight().weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
